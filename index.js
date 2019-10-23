@@ -34,6 +34,7 @@ function startProgram() {
             "View Employees by Department",
             "View Employees by Role",
             "View Employees by Manager",
+            "Add Employee"
         ]
     }).then(function (answer) {
         console.log(answer.action);
@@ -41,21 +42,22 @@ function startProgram() {
         if (answer.action === "View All Employees") {
             mergealltables();
         }
+        if (answer.action === "View Employees by Manager") {
+            allEmployeePerManager();
+        }
         if (answer.action === "View Employees by Department") {
             allEmployeePerDepartment();
+        }
+        if (answer.action === "Add Employee") {
+            addEmployee();
         }
         if (answer.action === "View Employees by Role") {
             allEmployeePerRole();
         }
-        if (answer.action === "View Employees by Manager") {
-            allEmployeePerManager();
-        }
+
     });
 
 }
-
-
-
 
 function allDepartment() {
     connection.query("select * from department", function (err, res) {
@@ -185,6 +187,67 @@ function allEmployeePerManager() {
 
                 });
             });
+        });
+    });
+}
+
+function addEmployee() {
+
+    console.log("Employee Information");
+
+    inquirer.prompt({
+
+        name: "action",
+        type: "Text",
+        message: "First Name"
+
+    }).then(function (fname) {
+        //console.log(fname.action);
+
+        inquirer.prompt({
+
+            name: "action",
+            type: "Text",
+            message: "Name"
+
+        }).then(function (lname) {
+            //console.log(lname.action);
+
+            connection.query("select * from role", function (err, data) {
+                if (err) throw err;
+                //console.log(data);
+
+                let newarrayy = [];
+
+                for (let counter = 0; counter < data.length; counter++) {
+                    newarrayy.push(data[counter].TITLE);
+                }
+
+                inquirer.prompt({
+
+                    name: "action",
+                    type: "list",
+                    message: "Which Role?",
+                    choices: newarrayy
+
+                }).then(function (answers) {
+                    //console.log(answers.action);
+
+                    connection.query(`select * from role where TITLE = '${answers.action}'`, function (err, roleid) {
+                        if (err) throw err;
+                        //console.log(roleid[0].ID);
+
+                        //get manager code here.
+
+
+
+                        console.log(fname.action, lname.action, roleid[0].ID);
+                    })
+
+                });
+            })
+
+
         });
     });
 }
